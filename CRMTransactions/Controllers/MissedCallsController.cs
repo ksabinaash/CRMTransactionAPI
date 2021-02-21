@@ -15,13 +15,13 @@ namespace CRMTransactions.Controllers
     [ApiController]
     public class MissedCallsController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly ILogger _logger;
+        private readonly AppDbContext context;
+        private readonly ILogger logger;
 
-        public MissedCallsController(AppDbContext context, ILogger<MissedCallsController> logger)
+        public MissedCallsController(AppDbContext context, ILogger<ValidCallsController> logger)
         {
-            _context = context;
-            _logger = logger;
+            this.context = context;
+            this.logger = logger;
         }
 
         // GET: api/MissedCalls
@@ -29,22 +29,14 @@ namespace CRMTransactions.Controllers
         public async Task<ActionResult<IEnumerable<MissedCall>>> GetMissedCalls()
         {
 
-            _logger.LogInformation("Get Missed Call successfull");
-            _logger.LogInformation("Get Missed Call successfull");
-            _logger.LogInformation("Get Missed Call successfull");
-            _logger.LogInformation("Get Missed Call successfull");
-            _logger.LogInformation("Get Missed Call successfull");
-            _logger.LogInformation("Get Missed Call successfull");
-            _logger.LogInformation("Get Missed Call successfull");
-            _logger.LogInformation("Get Missed Call successfull");
-            return await _context.MissedCalls.ToListAsync();
+           return await context.MissedCalls.Include("ValidCall").ToListAsync();
         }
 
         // GET: api/MissedCalls/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MissedCall>> GetMissedCall(int id)
         {
-            var missedCall = await _context.MissedCalls.FindAsync(id);
+            var missedCall = await context.MissedCalls.FindAsync(id);
 
             if (missedCall == null)
             {
@@ -67,11 +59,11 @@ namespace CRMTransactions.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(missedCall).State = EntityState.Modified;
+            context.Entry(missedCall).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -96,16 +88,16 @@ namespace CRMTransactions.Controllers
         {
             try
             {
-                _context.MissedCalls.Add(missedCall);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Post Missed Call successfull");
+                context.MissedCalls.Add(missedCall);
+                await context.SaveChangesAsync();
+                logger.LogInformation("Post Missed Call successfull");
 
                 return CreatedAtAction("GetMissedCall", new { id = missedCall.Id }, missedCall);
             }
             catch (Exception ex)
             {
 
-                _logger.LogError("Exception in PostMissedCall" + ex.Message);
+                logger.LogError("Exception in PostMissedCall" + ex.Message);
 
                 return StatusCode((int)HttpStatusCode.InternalServerError, "Error in Posting Missed Call Obnect");
             }
@@ -115,21 +107,21 @@ namespace CRMTransactions.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<MissedCall>> DeleteMissedCall(int id)
         {
-            var missedCall = await _context.MissedCalls.FindAsync(id);
+            var missedCall = await context.MissedCalls.FindAsync(id);
             if (missedCall == null)
             {
                 return NotFound();
             }
 
-            _context.MissedCalls.Remove(missedCall);
-            await _context.SaveChangesAsync();
+            context.MissedCalls.Remove(missedCall);
+            await context.SaveChangesAsync();
 
             return missedCall;
         }
 
         private bool MissedCallExists(int id)
         {
-            return _context.MissedCalls.Any(e => e.Id == id);
+            return context.MissedCalls.Any(e => e.Id == id);
         }
     }
 }

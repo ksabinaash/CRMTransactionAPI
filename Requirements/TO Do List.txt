@@ -1,0 +1,13 @@
+To Do:
+
+1.Date Filter for updating the missed call -	Fetch from  App settings - Done
+2.Basic Logging  - Done
+3.Swagger - Done
+4.API - GET,POST - Done
+5.Move DB/Business logic to Repository - Pending
+6.Exception handling - Pending
+7.Additional Get Endpoint for final LIst - Pending
+8.Host API
+9.Automate Blocks Check - Incomg, OutGoing, Missed Call - Pending
+11.UI
+
