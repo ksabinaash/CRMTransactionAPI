@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CRMTransactions.Models;
+using Microsoft.Extensions.Logging;
 
 namespace CRMTransactions.Controllers
 {
@@ -14,16 +15,26 @@ namespace CRMTransactions.Controllers
     public class ValidCallsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILogger _logger;
 
-        public ValidCallsController(AppDbContext context)
+        public ValidCallsController(AppDbContext context, ILogger<ValidCallsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/ValidCalls
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ValidCall>>> GetValidCalls()
         {
+            _logger.LogInformation("Get Valid Call successfull");
+            _logger.LogInformation("Get Valid Call successfull");
+            _logger.LogInformation("Get Valid Call successfull");
+            _logger.LogInformation("Get Valid Call successfull");
+            _logger.LogInformation("Get Valid Call successfull");
+            _logger.LogInformation("Get Valid Call successfull");
+            _logger.LogInformation("Get Valid Call successfull");
+            _logger.LogInformation("Get Valid Call successfull");
             return await _context.ValidCalls.ToListAsync();
         }
 
@@ -79,10 +90,34 @@ namespace CRMTransactions.Controllers
         [HttpPost]
         public async Task<ActionResult<ValidCall>> PostValidCall(ValidCall validCall)
         {
+
             _context.ValidCalls.Add(validCall);
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetValidCall", new { id = validCall.ValidCallId }, validCall);
+            _logger.LogInformation("Post ValidCall successfull");
+            // update only if the call type is missed cal ?
+
+            //if (validCall.CallType.Equals("outgoing", StringComparison.InvariantCultureIgnoreCase))
+            //{
+            var missedcalls = _context.MissedCalls.Where(x =>
+
+                (x.CustomerMobileNumber.Equals(validCall.CustomerMobileNumber)
+                && !x.ValidCallId.HasValue)
+                ).ToList();
+
+
+            foreach (var v in missedcalls)
+                {
+                    v.ValidCallId = validCall.ValidCallId;
+                     _context.MissedCalls.Update(v);
+                }
+
+            _context.SaveChanges();
+            //}
+
+
+            return Created("", validCall);
         }
 
         // DELETE: api/ValidCalls/5

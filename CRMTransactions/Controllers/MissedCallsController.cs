@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CRMTransactions.Models;
+using System.Net;
+using Microsoft.Extensions.Logging;
 
 namespace CRMTransactions.Controllers
 {
@@ -14,16 +16,27 @@ namespace CRMTransactions.Controllers
     public class MissedCallsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILogger _logger;
 
-        public MissedCallsController(AppDbContext context)
+        public MissedCallsController(AppDbContext context, ILogger<MissedCallsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: api/MissedCalls
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MissedCall>>> GetMissedCalls()
         {
+
+            _logger.LogInformation("Get Missed Call successfull");
+            _logger.LogInformation("Get Missed Call successfull");
+            _logger.LogInformation("Get Missed Call successfull");
+            _logger.LogInformation("Get Missed Call successfull");
+            _logger.LogInformation("Get Missed Call successfull");
+            _logger.LogInformation("Get Missed Call successfull");
+            _logger.LogInformation("Get Missed Call successfull");
+            _logger.LogInformation("Get Missed Call successfull");
             return await _context.MissedCalls.ToListAsync();
         }
 
@@ -47,6 +60,8 @@ namespace CRMTransactions.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMissedCall(int id, MissedCall missedCall)
         {
+
+            
             if (id != missedCall.Id)
             {
                 return BadRequest();
@@ -79,10 +94,21 @@ namespace CRMTransactions.Controllers
         [HttpPost]
         public async Task<ActionResult<MissedCall>> PostMissedCall(MissedCall missedCall)
         {
-            _context.MissedCalls.Add(missedCall);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.MissedCalls.Add(missedCall);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Post Missed Call successfull");
 
-            return CreatedAtAction("GetMissedCall", new { id = missedCall.Id }, missedCall);
+                return CreatedAtAction("GetMissedCall", new { id = missedCall.Id }, missedCall);
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError("Exception in PostMissedCall" + ex.Message);
+
+                return StatusCode((int)HttpStatusCode.InternalServerError, "Error in Posting Missed Call Obnect");
+            }
         }
 
         // DELETE: api/MissedCalls/5
