@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CRMTransactions.Models;
 using System.Net;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 namespace CRMTransactions.Controllers
 {
@@ -17,19 +18,73 @@ namespace CRMTransactions.Controllers
     {
         private readonly AppDbContext context;
         private readonly ILogger logger;
+        private readonly IConfiguration config;
 
-        public MissedCallsController(AppDbContext context, ILogger<ValidCallsController> logger)
+        public MissedCallsController(AppDbContext context, ILogger<ValidCallsController> logger, IConfiguration config)
         {
             this.context = context;
             this.logger = logger;
+            this.config = config;
         }
 
-        // GET: api/MissedCalls
+        // GET: api/MissedCalls/
         [HttpGet]
+        [Route("GetMissedCalls")]
         public async Task<ActionResult<IEnumerable<MissedCall>>> GetMissedCalls()
         {
+            return await context.MissedCalls.Include("ValidCall").ToListAsync();
+        }
 
-           return await context.MissedCalls.Include("ValidCall").ToListAsync();
+        // GET: api/MissedCalls/GetMissedCallsForGrid
+        [HttpGet]
+        [Route("GetMissedCallsForGrid")]
+        public async Task<ActionResult<IEnumerable<MissedCallGrid>>> GetMissedCallsForGrid()
+        {
+            var missedCalls = await context.MissedCalls.Include("ValidCall").ToListAsync();
+
+            List<MissedCallGrid> result = new List<MissedCallGrid>();
+
+            foreach (var call in missedCalls)
+            {
+                if (call.ValidCallId == null)
+                {
+                    MissedCallGrid item = new MissedCallGrid
+                    {
+                        CustomerMobileNumber = call.CustomerMobileNumber,
+                        EventTime = call.EventTime,
+                        Id = call.Id,
+                        LabName = call.LabName,
+                        LabPhoneNumber = call.LabPhoneNumber,
+                        CallBackStatus = config.GetValue<string>("NotCalledBackMsg")
+                    };
+                    result.Add(item);
+                }
+                else
+                {
+                    TimeSpan ts = call.ValidCall.EventTime - call.EventTime;
+
+                    MissedCallGrid item = new MissedCallGrid
+                    {
+                        CustomerMobileNumber = call.CustomerMobileNumber,
+                        EventTime = call.EventTime,
+                        Id = call.Id,
+                        LabName = call.LabName,
+                        LabPhoneNumber = call.LabPhoneNumber,
+                        CallBackStatus = config.GetValue<string>("CalledBackMsg"),
+                        RespondedCallType = call.ValidCall.CallType,
+                        RespondedCallDuration = call.ValidCall.CallDuration,
+                        RespondedCustomerMobileNumber = call.ValidCall.CustomerMobileNumber,
+                        RespondedEventTime = call.ValidCall.EventTime,
+                        RespondedLabName = call.ValidCall.LabName,
+                        RespondedLabPhoneNumber = call.ValidCall.LabPhoneNumber,
+                        RespondedTime = ts.TotalHours.ToString() + "Hrs"
+                    };
+
+                    result.Add(item);
+                }
+            }
+
+            return result;
         }
 
         // GET: api/MissedCalls/5
@@ -53,7 +108,7 @@ namespace CRMTransactions.Controllers
         public async Task<IActionResult> PutMissedCall(int id, MissedCall missedCall)
         {
 
-            
+
             if (id != missedCall.Id)
             {
                 return BadRequest();
