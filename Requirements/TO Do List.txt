@@ -11,3 +11,41 @@ To Do:
 9.Automate Blocks Check - Incomg, OutGoing, Missed Call - Pending
 11.UI
 
+
+
+Samples: for posts
+
+MissedCall :
+
+{
+  "id": 0,
+  "labName": "RJKPM",
+  "labPhoneNumber": "9677846664",
+  "customerMobileNumber": "9790123456",
+  "eventTime": "2021-02-21T16:46:41.719Z"
+}
+
+
+ValidCall :  OutGoing
+
+{
+  "validCallId": 0,
+  "labName": "RJKPM",
+  "labPhoneNumber": "9677846664",
+  "customerMobileNumber": "9790123456",
+  "eventTime": "2021-02-21T16:59:37.812Z",
+  "callDuration": 64,
+  "callType": "OutGoing"
+}
+
+
+ValidCall : Incoming
+{
+  "validCallId": 0,
+  "labName": "RJKPM",
+  "labPhoneNumber": "9677846664",
+  "customerMobileNumber": "1234567811",
+  "eventTime": "2021-02-21T16:22:37.812Z",
+  "callDuration": 24,
+  "callType": "Incoming"
+}
