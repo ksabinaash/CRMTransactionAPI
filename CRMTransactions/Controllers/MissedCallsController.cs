@@ -38,13 +38,16 @@ namespace CRMTransactions.Controllers
         // GET: api/MissedCalls/GetMissedCallsForGrid
         [HttpGet]
         [Route("GetMissedCallsForGrid")]
-        public async Task<ActionResult<IEnumerable<MissedCallGrid>>> GetMissedCallsForGrid()
+        public async Task<ActionResult<IEnumerable<MissedCallGrid>>> GetMissedCallsForGrid(DateTime? dateTime=null)
         {
             var missedCalls = await context.MissedCalls.Include("ValidCall").ToListAsync();
 
+            if (dateTime == null)
+                dateTime = DateTime.Now.AddDays(Convert.ToDouble(config.GetValue<string>("DaysFilter")));
+
             List<MissedCallGrid> result = new List<MissedCallGrid>();
 
-            foreach (var call in missedCalls)
+            foreach (var call in missedCalls.Where(m => m.EventTime >= dateTime))
             {
                 if (call.ValidCallId == null)
                 {
