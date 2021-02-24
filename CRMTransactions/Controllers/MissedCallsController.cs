@@ -38,7 +38,7 @@ namespace CRMTransactions.Controllers
         // GET: api/MissedCalls/GetMissedCallsForGrid
         [HttpGet]
         [Route("GetMissedCallsForGrid")]
-        public async Task<ActionResult<IEnumerable<MissedCallGrid>>> GetMissedCallsForGrid(DateTime? dateTime=null)
+        public async Task<ActionResult<IEnumerable<MissedCallGrid>>> GetMissedCallsForGrid(DateTime? dateTime = null)
         {
             var missedCalls = await context.MissedCalls.Include("ValidCall").ToListAsync();
 
@@ -80,7 +80,10 @@ namespace CRMTransactions.Controllers
                         RespondedEventTime = call.ValidCall.EventTime,
                         RespondedLabName = call.ValidCall.LabName,
                         RespondedLabPhoneNumber = call.ValidCall.LabPhoneNumber,
-                        RespondedTime = ts.TotalHours.ToString() + "Hrs"
+                        RespondedTime = Math.Round(ts.TotalHours, 2).ToString() + "Hrs",
+                        Action = call.ValidCall.Action,
+                        CallPurpose = call.ValidCall.CallPurpose,
+                        Comment = call.ValidCall.Comment
                     };
 
                     result.Add(item);

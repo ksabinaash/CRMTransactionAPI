@@ -128,7 +128,10 @@ namespace CRMTransactions.Controllers
                 return NotFound();
             }
 
+            context.MissedCalls.RemoveRange(context.MissedCalls.Where(x => x.ValidCallId.Equals(validCall.ValidCallId)).ToList());
+
             context.ValidCalls.Remove(validCall);
+
             await context.SaveChangesAsync();
 
             return validCall;

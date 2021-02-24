@@ -32,5 +32,11 @@ namespace CRMTransactions.Models
         public int RespondedCallDuration { get; set; }
 
         public string RespondedCallType { get; set; }
+
+        public string CallPurpose { get; set; }
+
+        public string Action { get; set; }
+
+        public string Comment { get; set; }
     }
 }
