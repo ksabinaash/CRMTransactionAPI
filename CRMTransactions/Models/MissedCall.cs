@@ -22,6 +22,10 @@ namespace CRMTransactions.Models
 
         public DateTime EventTime { get; set; }
 
+        public bool IsWhiteListed { get; set; }
+
+        public string CustomerName { get; set; }
+
         public int? ValidCallId { get; set; }
 
         [ForeignKey("ValidCallId")]

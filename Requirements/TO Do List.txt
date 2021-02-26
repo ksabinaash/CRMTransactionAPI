@@ -49,3 +49,118 @@ ValidCall : Incoming
   "callDuration": 24,
   "callType": "Incoming"
 }
+
+----------------------------------------
+
+As on 25-2
+
+1.Handle Valid call Delete - Delete missed call entry and proceed --Done
+2.Hanlde Time difference  
+3.Add callid column in the valid/missed call table -Done
+4.Add addtional 3 columns -Done
+5.Hanlde call duration time in 2 digits  -Done
+6.Add comments and other 3 columns to update the mised call filter  - -Check again
+7.Add logs > info - warning
+8.Research on how to update database with model first approach
+
+
+--------------EF Migrations-------------------
+Each package is licensed to you by its owner. NuGet is not responsible for, nor does it grant any licenses to, third-party packages. Some packages may include dependencies which are governed by additional licenses. Follow the package source (feed) URL to determine any dependencies.
+
+Package Manager Console Host Version 5.8.1.7021
+
+Type 'get-help NuGet' to see all available NuGet commands.
+
+PM> add-migration version 0.1
+Add-Migration : A positional parameter cannot be found that accepts argument '0.1'.
+At line:1 char:1
++ add-migration version 0.1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Add-Migration], ParameterBindingException
+    + FullyQualifiedErrorId : PositionalParameterNotFound,Add-Migration
+ 
+PM> add-migration version v01
+Add-Migration : A positional parameter cannot be found that accepts argument 'v01'.
+At line:1 char:1
++ add-migration version v01
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : InvalidArgument: (:) [Add-Migration], ParameterBindingException
+    + FullyQualifiedErrorId : PositionalParameterNotFound,Add-Migration
+ 
+PM> add-migration v01
+Build started...
+Build succeeded.
+To undo this action, use Remove-Migration.
+PM> Update-Database
+Build started...
+Build succeeded.
+Microsoft.Data.SqlClient.SqlException (0x80131904): There is already an object named 'ValidCalls' in the database.
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean isAsync, Int32 timeout, Boolean asyncWrite)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, Boolean sendToPipe, Int32 timeout, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry, String methodName)
+   at Microsoft.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQuery(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Migrations.MigrationCommand.ExecuteNonQuery(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQuery(IEnumerable`1 migrationCommands, IRelationalConnection connection)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.Migrate(String targetMigration)
+   at Microsoft.EntityFrameworkCore.Design.Internal.MigrationsOperations.UpdateDatabase(String targetMigration, String contextType)
+   at Microsoft.EntityFrameworkCore.Design.OperationExecutor.UpdateDatabaseImpl(String targetMigration, String contextType)
+   at Microsoft.EntityFrameworkCore.Design.OperationExecutor.UpdateDatabase.<>c__DisplayClass0_0.<.ctor>b__0()
+   at Microsoft.EntityFrameworkCore.Design.OperationExecutor.OperationBase.Execute(Action action)
+ClientConnectionId:641febcf-d863-4ee6-886e-3c9e8760190c
+Error Number:2714,State:6,Class:16
+There is already an object named 'ValidCalls' in the database.
+PM> Update-database v1
+Build started...
+Build succeeded.
+System.InvalidOperationException: The migration 'v1' was not found.
+   at Microsoft.EntityFrameworkCore.Migrations.MigrationsAssemblyExtensions.GetMigrationId(IMigrationsAssembly assembly, String nameOrId)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.PopulateMigrations(IEnumerable`1 appliedMigrationEntries, String targetMigration, IReadOnlyList`1& migrationsToApply, IReadOnlyList`1& migrationsToRevert, Migration& actualTargetMigration)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.GetMigrationCommandLists(IReadOnlyList`1 appliedMigrationEntries, String targetMigration)+MoveNext()
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.Migrate(String targetMigration)
+   at Microsoft.EntityFrameworkCore.Design.Internal.MigrationsOperations.UpdateDatabase(String targetMigration, String contextType)
+   at Microsoft.EntityFrameworkCore.Design.OperationExecutor.UpdateDatabaseImpl(String targetMigration, String contextType)
+   at Microsoft.EntityFrameworkCore.Design.OperationExecutor.UpdateDatabase.<>c__DisplayClass0_0.<.ctor>b__0()
+   at Microsoft.EntityFrameworkCore.Design.OperationExecutor.OperationBase.Execute(Action action)
+The migration 'v1' was not found.
+PM> Update-database v01
+Build started...
+Build succeeded.
+Microsoft.Data.SqlClient.SqlException (0x80131904): There is already an object named 'ValidCalls' in the database.
+   at Microsoft.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at Microsoft.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at Microsoft.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at Microsoft.Data.SqlClient.SqlCommand.RunExecuteNonQueryTds(String methodName, Boolean isAsync, Int32 timeout, Boolean asyncWrite)
+   at Microsoft.Data.SqlClient.SqlCommand.InternalExecuteNonQuery(TaskCompletionSource`1 completion, Boolean sendToPipe, Int32 timeout, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry, String methodName)
+   at Microsoft.Data.SqlClient.SqlCommand.ExecuteNonQuery()
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQuery(RelationalCommandParameterObject parameterObject)
+   at Microsoft.EntityFrameworkCore.Migrations.MigrationCommand.ExecuteNonQuery(IRelationalConnection connection, IReadOnlyDictionary`2 parameterValues)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQuery(IEnumerable`1 migrationCommands, IRelationalConnection connection)
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.Migrate(String targetMigration)
+   at Microsoft.EntityFrameworkCore.Design.Internal.MigrationsOperations.UpdateDatabase(String targetMigration, String contextType)
+   at Microsoft.EntityFrameworkCore.Design.OperationExecutor.UpdateDatabaseImpl(String targetMigration, String contextType)
+   at Microsoft.EntityFrameworkCore.Design.OperationExecutor.UpdateDatabase.<>c__DisplayClass0_0.<.ctor>b__0()
+   at Microsoft.EntityFrameworkCore.Design.OperationExecutor.OperationBase.Execute(Action action)
+ClientConnectionId:15bd78f6-ddb0-4b2b-9da9-b5a7619cbff9
+Error Number:2714,State:6,Class:16
+There is already an object named 'ValidCalls' in the database.
+PM> Update-database v01
+Build started...
+Build succeeded.
+Done.
+PM> add-migration v02
+Build started...
+Build succeeded.
+To undo this action, use Remove-Migration.
+PM> Update-database v02
+Build started...
+Build succeeded.
+Done.
+PM> Script-Migration | out-file ./script.sql
+Build started...
+Build succeeded.
+PM> 

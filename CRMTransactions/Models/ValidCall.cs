@@ -33,6 +33,14 @@ namespace CRMTransactions.Models
 
         public string Comment { get; set; }
 
+        public string CallStatus { get; set; }
+
+        public string UpdatedUser { get; set; }
+
+        public DateTime FollowUpTime { get; set; } = DateTime.Now;
+
+        public DateTime UpdatedDateTime { get; set; } = DateTime.Now;
+
         public ICollection<MissedCall> MissedCalls { get; set; }
     }
 }
