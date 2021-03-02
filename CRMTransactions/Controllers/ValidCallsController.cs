@@ -28,6 +28,7 @@ namespace CRMTransactions.Controllers
 
         // GET: api/ValidCalls
         [HttpGet]
+        [Route("GetValidCalls")]
         public async Task<ActionResult<IEnumerable<ValidCall>>> GetValidCalls()
         {
            return await context.ValidCalls.ToListAsync();
