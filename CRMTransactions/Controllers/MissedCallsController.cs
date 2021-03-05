@@ -58,6 +58,8 @@ namespace CRMTransactions.Controllers
                         Id = call.Id,
                         LabName = call.LabName,
                         LabPhoneNumber = call.LabPhoneNumber,
+                        IsWhiteListedCall = call.IsWhiteListed,
+                        CustomerName = call.CustomerName,
                         CallBackStatus = config.GetValue<string>("NotCalledBackMsg")
                     };
                     result.Add(item);
@@ -83,7 +85,9 @@ namespace CRMTransactions.Controllers
                         RespondedTime = Math.Round(ts.TotalHours, 2).ToString() + "Hrs",
                         Action = call.ValidCall.Action,
                         CallPurpose = call.ValidCall.CallPurpose,
-                        Comment = call.ValidCall.Comment
+                        Comment = call.ValidCall.Comment,
+                        IsWhiteListedCall = call.IsWhiteListed,
+                        CustomerName = call.CustomerName
                     };
 
                     result.Add(item);
@@ -149,6 +153,14 @@ namespace CRMTransactions.Controllers
         {
             try
             {
+                // to check if the missed call is from the whitelisted numbers
+                var whiteList = context.WhiteList.Where(x => x.MobileNumber.Equals(missedCall.CustomerMobileNumber)).FirstOrDefault();
+                if (whiteList?.MobileNumber!=null)
+                {
+                    missedCall.IsWhiteListed = true;
+                    missedCall.CustomerName = whiteList.Name;
+                }
+
                 context.MissedCalls.Add(missedCall);
                 await context.SaveChangesAsync();
                 logger.LogInformation("Post Missed Call successfull");
