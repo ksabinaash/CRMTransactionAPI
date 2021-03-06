@@ -29,7 +29,7 @@ namespace CRMTransactions.Controllers
 
         // GET: api/WhiteLists/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<WhiteList>> GetWhiteList(int id)
+        public async Task<ActionResult<WhiteList>> GetWhiteList(string id)
         {
             var whiteList = await _context.WhiteList.FindAsync(id);
 
@@ -45,9 +45,9 @@ namespace CRMTransactions.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutWhiteList(int id, WhiteList whiteList)
+        public async Task<IActionResult> PutWhiteList(string id, WhiteList whiteList)
         {
-            if (id != whiteList.Id)
+            if (id != whiteList.MobileNumber)
             {
                 return BadRequest();
             }
@@ -80,14 +80,28 @@ namespace CRMTransactions.Controllers
         public async Task<ActionResult<WhiteList>> PostWhiteList(WhiteList whiteList)
         {
             _context.WhiteList.Add(whiteList);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                if (WhiteListExists(whiteList.MobileNumber))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
 
-            return CreatedAtAction("GetWhiteList", new { id = whiteList.Id }, whiteList);
+            return CreatedAtAction("GetWhiteList", new { id = whiteList.MobileNumber }, whiteList);
         }
 
         // DELETE: api/WhiteLists/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<WhiteList>> DeleteWhiteList(int id)
+        public async Task<ActionResult<WhiteList>> DeleteWhiteList(string id)
         {
             var whiteList = await _context.WhiteList.FindAsync(id);
             if (whiteList == null)
@@ -101,9 +115,9 @@ namespace CRMTransactions.Controllers
             return whiteList;
         }
 
-        private bool WhiteListExists(int id)
+        private bool WhiteListExists(string id)
         {
-            return _context.WhiteList.Any(e => e.Id == id);
+            return _context.WhiteList.Any(e => e.MobileNumber == id);
         }
     }
 }

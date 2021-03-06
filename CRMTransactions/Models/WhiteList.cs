@@ -10,8 +10,6 @@ namespace CRMTransactions.Models
     public class WhiteList
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
         public string MobileNumber { get; set; }
 
         public string Name { get; set; }

@@ -12,17 +12,17 @@ namespace CRMTransactions.Models
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
-            this.Database.EnsureCreated();
+            //this.Database.EnsureCreated();
         }
 
         public DbSet<MissedCall> MissedCalls { get; set; }
 
         public DbSet<ValidCall> ValidCalls { get; set; }
 
-        public DbSet<CRMTransactions.Models.CallAction> CallAction { get; set; }
+        public DbSet<CallAction> CallAction { get; set; }
 
-        public DbSet<CRMTransactions.Models.CallPurpose> CallPurpose { get; set; }
+        public DbSet<CallPurpose> CallPurpose { get; set; }
 
-        public DbSet<CRMTransactions.Models.WhiteList> WhiteList { get; set; }
+        public DbSet<WhiteList> WhiteList { get; set; }
     }
 }

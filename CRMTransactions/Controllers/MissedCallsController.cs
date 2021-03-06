@@ -155,14 +155,18 @@ namespace CRMTransactions.Controllers
             {
                 // to check if the missed call is from the whitelisted numbers
                 var whiteList = context.WhiteList.Where(x => x.MobileNumber.Equals(missedCall.CustomerMobileNumber)).FirstOrDefault();
+                
                 if (whiteList?.MobileNumber!=null)
                 {
                     missedCall.IsWhiteListed = true;
+
                     missedCall.CustomerName = whiteList.Name;
                 }
 
                 context.MissedCalls.Add(missedCall);
+
                 await context.SaveChangesAsync();
+
                 logger.LogInformation("Post Missed Call successfull");
 
                 return CreatedAtAction("GetMissedCall", new { id = missedCall.Id }, missedCall);
@@ -181,12 +185,14 @@ namespace CRMTransactions.Controllers
         public async Task<ActionResult<MissedCall>> DeleteMissedCall(int id)
         {
             var missedCall = await context.MissedCalls.FindAsync(id);
+
             if (missedCall == null)
             {
                 return NotFound();
             }
 
             context.MissedCalls.Remove(missedCall);
+
             await context.SaveChangesAsync();
 
             return missedCall;

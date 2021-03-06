@@ -37,9 +37,9 @@ namespace CRMTransactions.Models
 
         public string UpdatedUser { get; set; }
 
-        public DateTime FollowUpTime { get; set; } = DateTime.Now;
+        public DateTime? FollowUpTime { get; set; } = DateTime.Now;
 
-        public DateTime UpdatedDateTime { get; set; } = DateTime.Now;
+        public DateTime? UpdatedDateTime { get; set; } = DateTime.Now;
 
         public ICollection<MissedCall> MissedCalls { get; set; }
     }
