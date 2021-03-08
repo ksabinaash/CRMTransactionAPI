@@ -51,9 +51,11 @@ namespace CRMTransactions.Controllers
         // PUT: api/ValidCalls/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutValidCall(int id, ValidCall validCall)
+        [HttpPut()]
+        public async Task<IActionResult> PutValidCall( ValidCall validCall)
         {
+            int id = validCall.ValidCallId;
+
             if (id != validCall.ValidCallId)
             {
                 return BadRequest();
@@ -106,11 +108,11 @@ namespace CRMTransactions.Controllers
                     )
                     ).ToList();
 
-
-
                 foreach (var v in missedcalls)
                 {
+                    TimeSpan ts = validCall.EventTime - v.EventTime;
                     v.ValidCallId = validCall.ValidCallId;
+                    v.RespondedTime = Math.Round(ts.TotalHours, 2).ToString() + "Hrs";
                     context.MissedCalls.Update(v);
                 }
 

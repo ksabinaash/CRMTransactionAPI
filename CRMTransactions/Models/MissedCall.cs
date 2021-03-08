@@ -26,6 +26,8 @@ namespace CRMTransactions.Models
 
         public string CustomerName { get; set; }
 
+        public string RespondedTime { get; set; }
+
         public int? ValidCallId { get; set; }
 
         [ForeignKey("ValidCallId")]

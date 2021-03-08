@@ -82,7 +82,7 @@ namespace CRMTransactions.Controllers
                         RespondedEventTime = call.ValidCall.EventTime,
                         RespondedLabName = call.ValidCall.LabName,
                         RespondedLabPhoneNumber = call.ValidCall.LabPhoneNumber,
-                        RespondedTime = Math.Round(ts.TotalHours, 2).ToString() + "Hrs",
+                        RespondedTime = call.RespondedTime,
                         Action = call.ValidCall.Action,
                         CallPurpose = call.ValidCall.CallPurpose,
                         Comment = call.ValidCall.Comment,
