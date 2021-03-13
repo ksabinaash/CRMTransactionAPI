@@ -49,7 +49,7 @@ namespace CRMTransactions
                 });
 
 
-                x.IncludeXmlComments(filePath);
+                //x.IncludeXmlComments(filePath);
 
             });
 
