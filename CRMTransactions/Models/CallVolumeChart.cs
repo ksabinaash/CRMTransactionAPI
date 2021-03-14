@@ -7,14 +7,13 @@ namespace CRMTransactions.Models
 {
     public class CallVolumeChart
     {
-        public List<ChartMetrics> MissedCalls { get; set; }
-        public List<ChartMetrics> IncomingCalls { get; set; }
-        public List<ChartMetrics> OutgoingCalls { get; set; }
-        public List<string> Labs { get; set; }
-        public List<string> MissedCallsCount { get; set; }
-        public List<string> IncomingCallsCount { get; set; }
-        public List<string> OutgoingCallsCount { get; set; }
+        public List<string> labs { get; set; }
 
+        public List<string> callTypes { get; set; }
+
+        public Dictionary<string, List<ChartMetrics>> volumeData { get; set; }
+
+        public List<List<string>> countData { get; set; }
     }
 
 }

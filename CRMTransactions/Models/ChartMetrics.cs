@@ -7,7 +7,7 @@ namespace CRMTransactions.Models
 {
         public class ChartMetrics
     {
-        public string labName { get; set; }
+        public string Name { get; set; }
 
         public int count { get; set; }
     }

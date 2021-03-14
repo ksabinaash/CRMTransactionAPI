@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,53 +18,54 @@ namespace CRMTransactions.Controllers
     public class CallsIntelligenceController : ControllerBase
     {
         private readonly AppDbContext context;
+
         private readonly ILogger logger;
+
         private readonly IConfiguration config;
 
         public CallsIntelligenceController(AppDbContext context, ILogger<CallsIntelligenceController> logger, IConfiguration config)
         {
             this.context = context;
+
             this.logger = logger;
+
             this.config = config;
         }
 
         [HttpGet]
-        [Route("AttendedCallsList")]
-        public async Task<ActionResult<CallVolumeChart>> GetAttendedCallsList(DateTime? fromDate = null, DateTime? toDate = null)
+        [Route("GetCallVolumeChartData")]
+        public async Task<ActionResult<CallVolumeChart>> GetCallVolumeChartData(DateTime? fromDate = null, DateTime? toDate = null)
         {
             if (fromDate == null)
+            {
                 fromDate = DateTime.Now.AddDays(Convert.ToDouble(config.GetValue<string>("DefaultReportFromDate")));
+            }
 
             if (toDate == null)
+            {
                 toDate = DateTime.Now;
+            }
 
             var labs = GetLabs().Result.Value;
 
-            var MissedCallCharts = new List<ChartMetrics>();
+            var callTypes = new List<string>() { "Missed", "Incoming", "Outgoing" };
 
-            foreach (var item in labs)
+            Dictionary<string, List<ChartMetrics>> callVolumeDictionary = new Dictionary<string, List<ChartMetrics>>();
+
+            foreach (var item in callTypes)
             {
-                ChartMetrics chartV2 = new ChartMetrics();
-                chartV2.labName = item;
-                MissedCallCharts.Add(chartV2);
-            }
+                var callType = new List<ChartMetrics>();
 
-            var IncomingCallCharts = new List<ChartMetrics>();
+                foreach (var labName in labs)
+                {
+                    ChartMetrics chartV2 = new ChartMetrics();
 
-            foreach (var item in labs)
-            {
-                ChartMetrics chartV2 = new ChartMetrics();
-                chartV2.labName = item;
-                IncomingCallCharts.Add(chartV2);
-            }
+                    chartV2.Name = labName;
 
-            var OutGoingCallCharts = new List<ChartMetrics>();
+                    callType.Add(chartV2);
+                }
 
-            foreach (var item in labs)
-            {
-                ChartMetrics chartV2 = new ChartMetrics();
-                chartV2.labName = item;
-                OutGoingCallCharts.Add(chartV2);
+                callVolumeDictionary.Add(item, callType);
             }
 
             var validCalls = await context.ValidCalls
@@ -89,27 +92,40 @@ namespace CRMTransactions.Controllers
                                                 Count = group.Count()
                                             }).ToList();
 
-
             foreach (var item in groupedMissedCalls)
             {
-                MissedCallCharts.Where(m => m.labName == item.Metric.LabName).ToList().ForEach(s => s.count = item.Count);
+                if (item.Metric.CallType == null)
+                    continue;
+
+                var callType = callVolumeDictionary[item.Metric.CallType] as List<ChartMetrics>;
+
+                callType.Where(m => m.Name.ToUpper() == item.Metric.LabName.ToUpper()).ToList().ForEach(s => s.count = item.Count);
             }
 
             foreach (var item in groupedValidCalls)
             {
-                IncomingCallCharts.Where(m => m.labName == item.Metric.LabName && item.Metric.CallType == "Incoming").ToList().ForEach(s => s.count = item.Count);
+                if (item.Metric.CallType == null)
+                    continue;
 
-                OutGoingCallCharts.Where(m => m.labName == item.Metric.LabName && item.Metric.CallType == "Outgoing").ToList().ForEach(s => s.count = item.Count);
+                var callType = callVolumeDictionary[item.Metric.CallType] as List<ChartMetrics>;
+
+                callType.Where(m => m.Name.ToUpper() == item.Metric.LabName.ToUpper()).ToList().ForEach(s => s.count = item.Count);
             }
 
             CallVolumeChart response = new CallVolumeChart();
-            response.MissedCalls = MissedCallCharts;
-            response.IncomingCalls = IncomingCallCharts;
-            response.OutgoingCalls = OutGoingCallCharts;
-            response.Labs = labs;
-            response.MissedCallsCount = MissedCallCharts.Select(m => m.count.ToString()).ToList();
-            response.IncomingCallsCount = IncomingCallCharts.Select(m => m.count.ToString()).ToList();
-            response.OutgoingCallsCount = OutGoingCallCharts.Select(m => m.count.ToString()).ToList();
+
+            response.labs = labs;
+
+            response.callTypes = callTypes;
+
+            response.volumeData = callVolumeDictionary;
+
+            response.countData = new List<List<string>>();
+
+            foreach (var item in callVolumeDictionary.Values)
+            {
+                response.countData.Add(item.Select(m => m.count.ToString()).ToList());
+            }
 
             return response;
         }
@@ -119,10 +135,14 @@ namespace CRMTransactions.Controllers
         public async Task<ActionResult<CallPurposeChart>> GetCallPurposeChartData(DateTime? fromDate = null, DateTime? toDate = null)
         {
             if (fromDate == null)
+            {
                 fromDate = DateTime.Now.AddDays(Convert.ToDouble(config.GetValue<string>("DefaultReportFromDate")));
+            }
 
             if (toDate == null)
+            {
                 toDate = DateTime.Now;
+            }
 
             var labs = GetLabs().Result.Value;
 
@@ -139,7 +159,9 @@ namespace CRMTransactions.Controllers
                 foreach (var lab in labs)
                 {
                     ChartMetrics chartV2 = new ChartMetrics();
-                    chartV2.labName = lab;
+
+                    chartV2.Name = lab;
+
                     purpose.Add(chartV2);
                 }
 
@@ -162,17 +184,124 @@ namespace CRMTransactions.Controllers
             {
                 var purpose = purposeDictionary[item.Metric.CallPurpose] as List<ChartMetrics>;
 
-                purpose.Where(m => m.labName == item.Metric.LabName && item.Metric.CallPurpose == item.Metric.CallPurpose).ToList().ForEach(s => s.count = item.Count);
+                purpose.Where(m => m.Name == item.Metric.LabName).ToList().ForEach(s => s.count = item.Count);
             }
 
             CallPurposeChart response = new CallPurposeChart();
+
             response.labs = labs;
+
             response.purposes = purposeDictionary.Keys.ToList();
+
             response.purposeData = purposeDictionary;
+
             response.countData = new List<List<string>>();
+
             foreach (var item in purposeDictionary.Values)
             {
-                response.countData.Add(item.Select(m=> m.count.ToString()).ToList());
+                response.countData.Add(item.Select(m => m.count.ToString()).ToList());
+            }
+            response.sumData = new List<string>();
+
+            foreach (var item in response.countData)
+            {
+                response.sumData.Add(item.Select(int.Parse).ToList().Sum().ToString());
+            }
+
+            return response;
+        }
+
+        [HttpGet]
+        [Route("GetCallTrendChartData")]
+        public async Task<ActionResult<CallTrendChart>> CallTrendChartData([Required] string labName, DateTime? fromDate = null, DateTime? toDate = null)
+        {
+            if (fromDate == null)
+            {
+                fromDate = DateTime.Now.AddDays(Convert.ToDouble(config.GetValue<string>("DefaultReportFromDate")));
+            }
+
+            if (toDate == null)
+            {
+                toDate = DateTime.Now;
+            }
+
+            CallTrendChart response = new CallTrendChart();
+
+            var labs = GetLabs().Result.Value;
+
+            var months = GetMonths(fromDate.GetValueOrDefault(), toDate.GetValueOrDefault());
+
+            response.Labs = labs;
+
+            response.Period = months;
+
+            response.LabName = labName;
+
+            var callTypes = new List<string>() { "Missed", "Incoming", "Outgoing" };
+
+            Dictionary<string, List<ChartMetrics>> callTrendDictionary = new Dictionary<string, List<ChartMetrics>>();
+
+            foreach (var item in months)
+            {
+                var period = new List<ChartMetrics>();
+
+                foreach (var callType in callTypes)
+                {
+                    ChartMetrics chartV2 = new ChartMetrics();
+
+                    chartV2.Name = callType;
+
+                    period.Add(chartV2);
+                }
+
+                callTrendDictionary.Add(item, period);
+            }
+
+            var validCalls = await context.ValidCalls
+                                                 .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate && s.LabName.ToUpper() == labName.ToUpper())
+                                                 .Select(x => new { x.EventTime, x.ValidCallId, x.CallType })
+                                                 .ToListAsync();
+
+            var missedCalls = await context.MissedCalls
+                                           .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate && s.LabName.ToUpper() == labName.ToUpper())
+                                           .Select(x => new { x.EventTime, x.Id, CallType = "Missed" })
+                                           .ToListAsync();
+
+            var groupedValidCalls = validCalls.GroupBy(vc => new { vc.EventTime.Month, vc.EventTime.Year, vc.CallType })
+                                             .Select(group => new
+                                             {
+                                                 Metric = group.Key,
+                                                 Count = group.Count()
+                                             }).ToList();
+
+            var groupedMissedCalls = missedCalls.GroupBy(vc => new { vc.EventTime.Month, vc.EventTime.Year, vc.CallType })
+                                            .Select(group => new
+                                            {
+                                                Metric = group.Key,
+                                                Count = group.Count()
+                                            }).ToList();
+
+            foreach (var item in groupedValidCalls)
+            {
+                var purpose = callTrendDictionary[CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.Metric.Month) + " " + item.Metric.Year ] as List<ChartMetrics>;
+
+                purpose.Where(m => m.Name == item.Metric.CallType).ToList().ForEach(s => s.count = item.Count);
+            }
+
+            foreach (var item in groupedMissedCalls)
+            {
+                var purpose = callTrendDictionary[CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.Metric.Month) + " " + item.Metric.Year] as List<ChartMetrics>;
+
+                purpose.Where(m => m.Name == item.Metric.CallType).ToList().ForEach(s => s.count = item.Count);
+            }
+
+            response.trendData = callTrendDictionary;
+
+            response.countData = new List<List<string>>();
+
+            foreach (var item in callTrendDictionary.Values)
+            {
+                response.countData.Add(item.Select(m => m.count.ToString()).ToList());
             }
 
             return response;
@@ -194,5 +323,24 @@ namespace CRMTransactions.Controllers
 
             return labs;
         }
+
+        private List<string> GetMonths(DateTime from, DateTime to) 
+        {
+           var start = from;
+            var end = to;
+
+            // set end-date to end of month
+            end = new DateTime(end.Year, end.Month, DateTime.DaysInMonth(end.Year, end.Month));
+
+            var diff = Enumerable.Range(0, Int32.MaxValue)
+                                 .Select(e => start.AddMonths(e))
+                                 .TakeWhile(e => e <= end)
+                                 .Select(e => e.ToString("MMMM yyyy"));
+
+            var value = diff.ToList();
+
+            return value;
+        }
     }
 }
+
