@@ -243,20 +243,20 @@ namespace CRMTransactions.Controllers
 
             Dictionary<string, List<ChartMetrics>> callTrendDictionary = new Dictionary<string, List<ChartMetrics>>();
 
-            foreach (var item in months)
+            foreach (var item in callTypes)
             {
-                var period = new List<ChartMetrics>();
+                var callType = new List<ChartMetrics>();
 
-                foreach (var callType in callTypes)
+                foreach (var month in months)
                 {
                     ChartMetrics chartV2 = new ChartMetrics();
 
-                    chartV2.Name = callType;
+                    chartV2.Name = month;
 
-                    period.Add(chartV2);
+                    callType.Add(chartV2);
                 }
 
-                callTrendDictionary.Add(item, period);
+                callTrendDictionary.Add(item, callType);
             }
 
             var validCalls = await context.ValidCalls
@@ -285,16 +285,22 @@ namespace CRMTransactions.Controllers
 
             foreach (var item in groupedValidCalls)
             {
-                var purpose = callTrendDictionary[CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.Metric.Month) + " " + item.Metric.Year ] as List<ChartMetrics>;
+                if (item.Metric.CallType == null)
+                    continue;
 
-                purpose.Where(m => m.Name == item.Metric.CallType).ToList().ForEach(s => s.count = item.Count);
+                var purpose = callTrendDictionary[item.Metric.CallType] as List<ChartMetrics>;
+
+                purpose.Where(m => m.Name == CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.Metric.Month) + " " + item.Metric.Year).ToList().ForEach(s => s.count = item.Count);
             }
 
             foreach (var item in groupedMissedCalls)
             {
-                var purpose = callTrendDictionary[CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.Metric.Month) + " " + item.Metric.Year] as List<ChartMetrics>;
+                if (item.Metric.CallType == null)
+                    continue;
 
-                purpose.Where(m => m.Name == item.Metric.CallType).ToList().ForEach(s => s.count = item.Count);
+                var purpose = callTrendDictionary[item.Metric.CallType] as List<ChartMetrics>;
+
+                purpose.Where(m => m.Name == CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.Metric.Month) + " " + item.Metric.Year).ToList().ForEach(s => s.count = item.Count);
             }
 
             response.trendData = callTrendDictionary;
