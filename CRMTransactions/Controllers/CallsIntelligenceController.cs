@@ -36,17 +36,7 @@ namespace CRMTransactions.Controllers
             if (toDate == null)
                 toDate = DateTime.Now;
 
-            var ValidCallsLabs = await context.ValidCalls.Select(m => m.LabName).Distinct().ToListAsync();
-
-            var missedCallsLabs = await context.MissedCalls.Select(m => m.LabName).Distinct().ToListAsync();
-
-            List<string> labs = new List<string>();
-
-            labs.AddRange(ValidCallsLabs);
-
-            labs.AddRange(missedCallsLabs);
-
-            labs = labs.Distinct().OrderBy(x=> x).ToList();
+            var labs = GetLabs().Result.Value;
 
             var MissedCallCharts = new List<ChartMetrics>();
 
@@ -99,7 +89,7 @@ namespace CRMTransactions.Controllers
                                                 Count = group.Count()
                                             }).ToList();
 
-      
+
             foreach (var item in groupedMissedCalls)
             {
                 MissedCallCharts.Where(m => m.labName == item.Metric.LabName).ToList().ForEach(s => s.count = item.Count);
@@ -122,6 +112,87 @@ namespace CRMTransactions.Controllers
             response.OutgoingCallsCount = OutGoingCallCharts.Select(m => m.count.ToString()).ToList();
 
             return response;
+        }
+
+        [HttpGet]
+        [Route("GetCallPurposeChartData")]
+        public async Task<ActionResult<CallPurposeChart>> GetCallPurposeChartData(DateTime? fromDate = null, DateTime? toDate = null)
+        {
+            if (fromDate == null)
+                fromDate = DateTime.Now.AddDays(Convert.ToDouble(config.GetValue<string>("DefaultReportFromDate")));
+
+            if (toDate == null)
+                toDate = DateTime.Now;
+
+            var labs = GetLabs().Result.Value;
+
+            var callPurpose = await context.CallPurpose.ToListAsync();
+
+            var purposes = callPurpose.Select(m => m.PurposeoftheCall).ToList();
+
+            Dictionary<string, List<ChartMetrics>> purposeDictionary = new Dictionary<string, List<ChartMetrics>>();
+
+            foreach (var item in purposes)
+            {
+                var purpose = new List<ChartMetrics>();
+
+                foreach (var lab in labs)
+                {
+                    ChartMetrics chartV2 = new ChartMetrics();
+                    chartV2.labName = lab;
+                    purpose.Add(chartV2);
+                }
+
+                purposeDictionary.Add(item, purpose);
+            }
+
+            var validCalls = await context.ValidCalls
+                                              .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate)
+                                              .Select(x => new { x.LabName, x.ValidCallId, x.CallPurpose })
+                                              .ToListAsync();
+
+            var groupedValidCalls = validCalls.GroupBy(vc => new { vc.LabName, vc.CallPurpose })
+                                             .Select(group => new
+                                             {
+                                                 Metric = group.Key,
+                                                 Count = group.Count()
+                                             }).ToList();
+
+            foreach (var item in groupedValidCalls)
+            {
+                var purpose = purposeDictionary[item.Metric.CallPurpose] as List<ChartMetrics>;
+
+                purpose.Where(m => m.labName == item.Metric.LabName && item.Metric.CallPurpose == item.Metric.CallPurpose).ToList().ForEach(s => s.count = item.Count);
+            }
+
+            CallPurposeChart response = new CallPurposeChart();
+            response.labs = labs;
+            response.purposes = purposeDictionary.Keys.ToList();
+            response.purposeData = purposeDictionary;
+            response.countData = new List<List<string>>();
+            foreach (var item in purposeDictionary.Values)
+            {
+                response.countData.Add(item.Select(m=> m.count.ToString()).ToList());
+            }
+
+            return response;
+        }
+
+        private async Task<ActionResult<List<String>>> GetLabs()
+        {
+            var ValidCallsLabs = await context.ValidCalls.Select(m => m.LabName).Distinct().ToListAsync();
+
+            var missedCallsLabs = await context.MissedCalls.Select(m => m.LabName).Distinct().ToListAsync();
+
+            List<string> labs = new List<string>();
+
+            labs.AddRange(ValidCallsLabs);
+
+            labs.AddRange(missedCallsLabs);
+
+            labs = labs.Distinct().OrderBy(x => x).ToList();
+
+            return labs;
         }
     }
 }
