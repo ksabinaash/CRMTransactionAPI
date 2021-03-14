@@ -13,7 +13,7 @@ namespace CRMTransactions.Models
 
         public Dictionary<string, List<ChartMetrics>> purposeData { get; set; }
 
-        public List<List<string>> countData { get; set; }
+        public List<List<int>> countData { get; set; }
 
         public List<string> sumData { get; set; }
     }

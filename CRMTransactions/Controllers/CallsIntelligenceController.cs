@@ -195,17 +195,17 @@ namespace CRMTransactions.Controllers
 
             response.purposeData = purposeDictionary;
 
-            response.countData = new List<List<string>>();
+            response.countData = new List<List<int>>();
 
             foreach (var item in purposeDictionary.Values)
             {
-                response.countData.Add(item.Select(m => m.count.ToString()).ToList());
+                response.countData.Add(item.Select(m => m.count).ToList());
             }
             response.sumData = new List<string>();
 
             foreach (var item in response.countData)
             {
-                response.sumData.Add(item.Select(int.Parse).ToList().Sum().ToString());
+                response.sumData.Add(item.ToList().Sum().ToString());
             }
 
             return response;
