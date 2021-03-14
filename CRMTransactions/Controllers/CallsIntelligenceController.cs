@@ -231,13 +231,15 @@ namespace CRMTransactions.Controllers
 
             var months = GetMonths(fromDate.GetValueOrDefault(), toDate.GetValueOrDefault());
 
-            response.Labs = labs;
+            response.labs = labs;
 
-            response.Period = months;
+            response.period = months;
 
-            response.LabName = labName;
+            response.labName = labName;
 
             var callTypes = new List<string>() { "Missed", "Incoming", "Outgoing" };
+
+            response.callTypes = callTypes;
 
             Dictionary<string, List<ChartMetrics>> callTrendDictionary = new Dictionary<string, List<ChartMetrics>>();
 
