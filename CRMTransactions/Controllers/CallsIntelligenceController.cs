@@ -225,6 +225,9 @@ namespace CRMTransactions.Controllers
                 toDate = DateTime.Now;
             }
 
+            labName = labName.Equals("All", StringComparison.InvariantCultureIgnoreCase) ? null: labName.ToUpper();
+           
+
             CallTrendChart response = new CallTrendChart();
 
             var labs = GetLabs().Result.Value;
@@ -260,12 +263,12 @@ namespace CRMTransactions.Controllers
             }
 
             var validCalls = await context.ValidCalls
-                                                 .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate && s.LabName.ToUpper() == labName.ToUpper())
+                                                 .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate && s.LabName.ToUpper() == (labName??s.LabName))
                                                  .Select(x => new { x.EventTime, x.ValidCallId, x.CallType })
                                                  .ToListAsync();
 
             var missedCalls = await context.MissedCalls
-                                           .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate && s.LabName.ToUpper() == labName.ToUpper())
+                                           .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate && s.LabName.ToUpper() == (labName ?? s.LabName))
                                            .Select(x => new { x.EventTime, x.Id, CallType = "Missed" })
                                            .ToListAsync();
 

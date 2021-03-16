@@ -31,7 +31,7 @@ namespace CRMTransactions.Controllers
         [Route("GetValidCalls")]
         public async Task<ActionResult<IEnumerable<ValidCall>>> GetValidCalls()
         {
-           return await context.ValidCalls.ToListAsync();
+           return await context.ValidCalls.OrderByDescending(x=>x.ValidCallId).ToListAsync();
         }
 
         // GET: api/ValidCalls/5

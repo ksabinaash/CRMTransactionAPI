@@ -12,6 +12,21 @@ To Do:
 11.UI
 
 
+Post Discussion on 16/03/2021
+
+1.Missed Call - Responded/Not Responded  Checkbox to filter records - Default - unchecked  ----Done
+2.Responded Call - x/x  Checkbox to filter records - Default - unchecked ----Done
+3.Records ordering ----Done
+4.Disable followup time for other actions - enable only for followup
+5.Save message -- Yet to test & check
+6.Lab Name - Add 'All' - # - Add # in chart that requires labname
+7.Chart- Trend chart - Check for all lab possibilities----Done--Testing
+8.Lab Name - ordering ----Done
+9.From / To - Remove time - Default 12 AM  -- Partially done
+10.Remove extra Chart menu in Menu control--Done
+
+
+
 
 Samples: for posts
 
@@ -30,11 +45,11 @@ ValidCall :  OutGoing
 
 {
   "validCallId": 0,
-  "labName": "RJKPM",
+  "labName": "TBM",
   "labPhoneNumber": "9677846664",
   "customerMobileNumber": "9790123456",
-  "eventTime": "2021-02-21T16:59:37.812Z",
-  "callDuration": 64,
+  "eventTime": "2021-03-11T16:59:37.812Z",
+  "callDuration": 14,
   "callType": "OutGoing"
 }
 
@@ -44,7 +59,7 @@ ValidCall : Incoming
   "validCallId": 0,
   "labName": "RJKPM",
   "labPhoneNumber": "9677846664",
-  "customerMobileNumber": "1234567811",
+  "customerMobileNumber": "9790123456",
   "eventTime": "2021-02-21T16:22:37.812Z",
   "callDuration": 24,
   "callType": "Incoming"
