@@ -34,7 +34,7 @@ namespace CRMTransactions.Controllers
 
         [HttpGet]
         [Route("GetCallVolumeChartData")]
-        public async Task<ActionResult<CallVolumeChart>> GetCallVolumeChartData(DateTime? fromDate = null, DateTime? toDate = null)
+        public async Task<ActionResult<CallVolumeChart>> GetCallVolumeChartData([FromQuery]DateTime? fromDate = null, [FromQuery]DateTime? toDate = null)
         {
             if (fromDate == null)
             {
@@ -132,7 +132,7 @@ namespace CRMTransactions.Controllers
 
         [HttpGet]
         [Route("GetCallPurposeChartData")]
-        public async Task<ActionResult<CallPurposeChart>> GetCallPurposeChartData(DateTime? fromDate = null, DateTime? toDate = null)
+        public async Task<ActionResult<CallPurposeChart>> GetCallPurposeChartData([FromQuery] DateTime? fromDate = null, [FromQuery] DateTime? toDate = null)
         {
             if (fromDate == null)
             {
@@ -213,7 +213,7 @@ namespace CRMTransactions.Controllers
 
         [HttpGet]
         [Route("GetCallTrendChartData")]
-        public async Task<ActionResult<CallTrendChart>> CallTrendChartData([Required] string labName, DateTime? fromDate = null, DateTime? toDate = null)
+        public async Task<ActionResult<CallTrendChart>> CallTrendChartData([Required][FromQuery] string labName, [FromQuery] DateTime? fromDate = null, [FromQuery] DateTime? toDate = null)
         {
             if (fromDate == null)
             {
@@ -238,7 +238,7 @@ namespace CRMTransactions.Controllers
 
             response.period = months;
 
-            response.labName = labName;
+            response.labName = labName ?? "All";
 
             var callTypes = new List<string>() { "Missed", "Incoming", "Outgoing" };
 
@@ -263,12 +263,12 @@ namespace CRMTransactions.Controllers
             }
 
             var validCalls = await context.ValidCalls
-                                                 .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate && s.LabName.ToUpper() == (labName??s.LabName))
+                                                 .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate && s.LabName.ToUpper() == (labName ?? s.LabName.ToUpper()))
                                                  .Select(x => new { x.EventTime, x.ValidCallId, x.CallType })
                                                  .ToListAsync();
 
             var missedCalls = await context.MissedCalls
-                                           .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate && s.LabName.ToUpper() == (labName ?? s.LabName))
+                                           .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate && s.LabName.ToUpper() == (labName ?? s.LabName.ToUpper()))
                                            .Select(x => new { x.EventTime, x.Id, CallType = "Missed" })
                                            .ToListAsync();
 
