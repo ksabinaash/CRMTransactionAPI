@@ -19,7 +19,7 @@ namespace CRMTransactions.Controllers
         private readonly ILogger logger;
         private readonly IConfiguration configuration;
 
-        public ValidCallsController(AppDbContext context, ILogger<ValidCallsController> logger , IConfiguration configuration)
+        public ValidCallsController(AppDbContext context, ILogger<ValidCallsController> logger, IConfiguration configuration)
         {
             this.context = context;
             this.logger = logger;
@@ -31,7 +31,7 @@ namespace CRMTransactions.Controllers
         [Route("GetValidCalls")]
         public async Task<ActionResult<IEnumerable<ValidCall>>> GetValidCalls()
         {
-           return await context.ValidCalls.OrderByDescending(x=>x.ValidCallId).ToListAsync();
+            return await context.ValidCalls.OrderByDescending(x => x.ValidCallId).ToListAsync();
         }
 
         // GET: api/ValidCalls/5
@@ -52,7 +52,7 @@ namespace CRMTransactions.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut()]
-        public async Task<IActionResult> PutValidCall( ValidCall validCall)
+        public async Task<IActionResult> PutValidCall(ValidCall validCall)
         {
             int id = validCall.ValidCallId;
 
@@ -100,27 +100,25 @@ namespace CRMTransactions.Controllers
 
             //TODO: update only if the call type is missed cal ? Date filter & call duration
 
-            if (validCall.CallDuration > Convert.ToInt32(configuration.GetValue<string>("CallDurationInSeconds")))
+            int hours = Convert.ToInt32(configuration.GetValue<string>("HourFilterRange"));
+
+            var missedcalls = context.MissedCalls.Where(x =>
+
+                (x.CustomerMobileNumber.Equals(validCall.CustomerMobileNumber)
+                && !x.ValidCallId.HasValue && x.EventTime > DateTime.Now.AddHours(-hours)
+                )
+                ).ToList();
+
+            foreach (var v in missedcalls)
             {
-                int hours = Convert.ToInt32(configuration.GetValue<string>("HourFilterRange"));
-
-                var missedcalls = context.MissedCalls.Where(x =>
-
-                    (x.CustomerMobileNumber.Equals(validCall.CustomerMobileNumber)
-                    && !x.ValidCallId.HasValue && x.EventTime > DateTime.Now.AddHours(-hours)
-                    )
-                    ).ToList();
-
-                foreach (var v in missedcalls)
-                {
-                    TimeSpan ts = validCall.EventTime - v.EventTime;
-                    v.ValidCallId = validCall.ValidCallId;
-                    v.RespondedTime = Math.Round(ts.TotalHours, 2).ToString() + "Hrs";
-                    context.MissedCalls.Update(v);
-                }
-
-                context.SaveChanges();
+                TimeSpan ts = validCall.EventTime - v.EventTime;
+                v.ValidCallId = validCall.ValidCallId;
+                v.RespondedTime = Math.Round(ts.TotalHours, 2).ToString() + "Hrs";
+                context.MissedCalls.Update(v);
             }
+
+            context.SaveChanges();
+
             return Created("", validCall);
         }
 
