@@ -182,6 +182,9 @@ namespace CRMTransactions.Controllers
 
             foreach (var item in groupedValidCalls)
             {
+                if (item.Metric.CallPurpose == null)
+                    continue;
+
                 var purpose = purposeDictionary[item.Metric.CallPurpose] as List<ChartMetrics>;
 
                 purpose.Where(m => m.Name == item.Metric.LabName).ToList().ForEach(s => s.count = item.Count);
