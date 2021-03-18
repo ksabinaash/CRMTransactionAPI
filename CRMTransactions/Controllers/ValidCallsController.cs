@@ -56,6 +56,8 @@ namespace CRMTransactions.Controllers
         {
             int id = validCall.ValidCallId;
 
+            validCall.UpdatedDateTime = DateTime.Now;
+
             if (id != validCall.ValidCallId)
             {
                 return BadRequest();
@@ -88,6 +90,7 @@ namespace CRMTransactions.Controllers
         [HttpPost]
         public async Task<ActionResult<ValidCall>> PostValidCall(ValidCall validCall)
         {
+            validCall.UpdatedDateTime = DateTime.Now;
 
             context.ValidCalls.Add(validCall);
 
