@@ -48,7 +48,7 @@ namespace CRMTransactions.Controllers
 
             var labs = GetLabs().Result.Value;
 
-            var callTypes = new List<string>() { "Missed", "Incoming", "Outgoing" };
+            var callTypes = new List<string>() { "MISSED", "INCOMING", "OUTGOING" };
 
             Dictionary<string, List<ChartMetrics>> callVolumeDictionary = new Dictionary<string, List<ChartMetrics>>();
 
@@ -70,12 +70,12 @@ namespace CRMTransactions.Controllers
 
             var validCalls = await context.ValidCalls
                                               .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate)
-                                              .Select(x => new { x.LabName, x.ValidCallId, x.CallType })
+                                              .Select(x => new { x.LabName, x.ValidCallId, CallType = x.CallType.ToUpper() })
                                               .ToListAsync();
 
             var missedCalls = await context.MissedCalls
                                            .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate)
-                                           .Select(x => new { x.LabName, x.Id, CallType = "Missed" })
+                                           .Select(x => new { x.LabName, x.Id, CallType = "MISSED" })
                                            .ToListAsync();
 
             var groupedValidCalls = validCalls.GroupBy(vc => new { vc.LabName, vc.CallType })
@@ -243,7 +243,7 @@ namespace CRMTransactions.Controllers
 
             response.labName = labName ?? "All";
 
-            var callTypes = new List<string>() { "Missed", "Incoming", "Outgoing" };
+            var callTypes = new List<string>() { "MISSED", "INCOMING", "OUTGOING" };
 
             response.callTypes = callTypes;
 
@@ -267,12 +267,12 @@ namespace CRMTransactions.Controllers
 
             var validCalls = await context.ValidCalls
                                                  .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate && s.LabName.ToUpper() == (labName ?? s.LabName.ToUpper()))
-                                                 .Select(x => new { x.EventTime, x.ValidCallId, x.CallType })
+                                                 .Select(x => new { x.EventTime, x.ValidCallId, CallType=x.CallType.ToUpper() })
                                                  .ToListAsync();
 
             var missedCalls = await context.MissedCalls
                                            .Where(s => s.EventTime >= fromDate && s.EventTime <= toDate && s.LabName.ToUpper() == (labName ?? s.LabName.ToUpper()))
-                                           .Select(x => new { x.EventTime, x.Id, CallType = "Missed" })
+                                           .Select(x => new { x.EventTime, x.Id, CallType = "MISSED" })
                                            .ToListAsync();
 
             var groupedValidCalls = validCalls.GroupBy(vc => new { vc.EventTime.Month, vc.EventTime.Year, vc.CallType })
