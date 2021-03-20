@@ -32,7 +32,7 @@ namespace CRMTransactions.Controllers
         [Route("GetMissedCalls")]
         public async Task<ActionResult<IEnumerable<MissedCall>>> GetMissedCalls()
         {
-            return await context.MissedCalls.Include("ValidCall").ToListAsync();
+            return await context.MissedCalls.Include("ValidCall").OrderByDescending(x => x.Id).ToListAsync();
         }
 
         // GET: api/MissedCalls/GetMissedCallsForGrid
@@ -40,7 +40,7 @@ namespace CRMTransactions.Controllers
         [Route("GetMissedCallsForGrid")]
         public async Task<ActionResult<IEnumerable<MissedCallGrid>>> GetMissedCallsForGrid(DateTime? dateTime = null)
         {
-            var missedCalls = await context.MissedCalls.Include("ValidCall").ToListAsync();
+            var missedCalls = await context.MissedCalls.Include("ValidCall").OrderByDescending(x => x.Id).ToListAsync();
 
             if (dateTime == null)
                 dateTime = DateTime.Now.AddDays(Convert.ToDouble(config.GetValue<string>("DaysFilter")));
