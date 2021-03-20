@@ -87,7 +87,8 @@ namespace CRMTransactions.Controllers
                         CallPurpose = call.ValidCall.CallPurpose,
                         Comment = call.ValidCall.Comment,
                         IsWhiteListedCall = call.IsWhiteListed,
-                        CustomerName = call.CustomerName
+                        CustomerName = call.CustomerName,
+                        ValidCallId = call.ValidCallId
                     };
 
                     result.Add(item);

@@ -42,5 +42,7 @@ namespace CRMTransactions.Models
         public bool IsWhiteListedCall { get; set; }
 
         public string CustomerName { get; set; }
+
+        public int? ValidCallId { get; set; }
     }
 }
