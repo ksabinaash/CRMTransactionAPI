@@ -154,7 +154,7 @@ namespace CRMTransactions.Controllers
             try
             {
                 // to check if the missed call is from the whitelisted numbers
-                var whiteList = context.WhiteList.Where(x => x.MobileNumber.Equals(missedCall.CustomerMobileNumber)).FirstOrDefault();
+                var whiteList = context.WhiteList.Where(x => x.MobileNumber.Equals(missedCall.CustomerMobileNumber.Substring(3))).FirstOrDefault();
                 
                 if (whiteList?.MobileNumber!=null)
                 {
