@@ -98,6 +98,18 @@ namespace CRMTransactions.Controllers
             _context.CallAction.Remove(callAction);
             await _context.SaveChangesAsync();
 
+            //remove the deleted actions from the table entries
+
+            var validCallswithSelectedAction = _context.ValidCalls.Where(x => x.Action.Equals(callAction.Actions, StringComparison.InvariantCultureIgnoreCase));
+            if(validCallswithSelectedAction.Count()>0)
+            {
+                foreach( ValidCall vc in  validCallswithSelectedAction)
+                {
+                    vc.Action = "";
+                }
+                await _context.SaveChangesAsync();
+            }
+
             return callAction;
         }
 
