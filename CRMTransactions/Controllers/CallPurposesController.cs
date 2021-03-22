@@ -96,7 +96,21 @@ namespace CRMTransactions.Controllers
             }
 
             _context.CallPurpose.Remove(callPurpose);
+
             await _context.SaveChangesAsync();
+
+            //remove the deleted purpose from the table entries
+
+            var validCallswithSelectedAction = _context.ValidCalls.Where(x => x.CallPurpose.Equals(callPurpose.PurposeoftheCall, StringComparison.InvariantCultureIgnoreCase));
+            if (validCallswithSelectedAction.Count() > 0)
+            {
+                foreach (ValidCall vc in validCallswithSelectedAction)
+                {
+                    vc.CallPurpose = "";
+                }
+                await _context.SaveChangesAsync();
+            }
+
 
             return callPurpose;
         }
