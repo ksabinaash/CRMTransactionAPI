@@ -90,13 +90,17 @@ namespace CRMTransactions.Controllers
         [HttpPost]
         public async Task<ActionResult<ValidCall>> PostValidCall(ValidCall validCall)
         {
-            validCall.EventTime = validCall.EventTime.ToUniversalTime().AddHours(5).AddMinutes(30);
+            DateTime timeUtc = System.DateTime.UtcNow;
 
-            validCall.UpdatedDateTime = DateTime.Now.ToUniversalTime().AddHours(5).AddMinutes(30);
+            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+            validCall.EventTime = TimeZoneInfo.ConvertTimeFromUtc(validCall.EventTime, cstZone);
+
+            validCall.UpdatedDateTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
             if (validCall.FollowUpTime != null)
             {
-                validCall.FollowUpTime = validCall.FollowUpTime.GetValueOrDefault().ToUniversalTime().AddHours(5).AddMinutes(30);
+                validCall.FollowUpTime = TimeZoneInfo.ConvertTimeFromUtc(validCall.FollowUpTime.GetValueOrDefault(), cstZone);
             }
 
             context.ValidCalls.Add(validCall);
