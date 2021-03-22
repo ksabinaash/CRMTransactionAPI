@@ -154,6 +154,8 @@ namespace CRMTransactions.Controllers
         {
             try
             {
+                missedCall.EventTime = missedCall.EventTime.ToUniversalTime().AddHours(5).AddMinutes(30);
+
                 // to check if the missed call is from the whitelisted numbers
                 var whiteList = context.WhiteList.Where(x => x.MobileNumber.Equals(missedCall.CustomerMobileNumber.Substring(3))).FirstOrDefault();
                 

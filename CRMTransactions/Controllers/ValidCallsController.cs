@@ -90,15 +90,20 @@ namespace CRMTransactions.Controllers
         [HttpPost]
         public async Task<ActionResult<ValidCall>> PostValidCall(ValidCall validCall)
         {
-            validCall.UpdatedDateTime = DateTime.Now;
+            validCall.EventTime = validCall.EventTime.ToUniversalTime().AddHours(5).AddMinutes(30);
+
+            validCall.UpdatedDateTime = DateTime.Now.ToUniversalTime().AddHours(5).AddMinutes(30);
+
+            if (validCall.FollowUpTime != null)
+            {
+                validCall.FollowUpTime = validCall.FollowUpTime.GetValueOrDefault().ToUniversalTime().AddHours(5).AddMinutes(30);
+            }
 
             context.ValidCalls.Add(validCall);
 
             await context.SaveChangesAsync();
 
             logger.LogInformation("Post ValidCall successfull");
-
-            //TODO: update only if the call type is missed cal ? Date filter & call duration
 
             int hours = Convert.ToInt32(configuration.GetValue<string>("HourFilterRange"));
 
