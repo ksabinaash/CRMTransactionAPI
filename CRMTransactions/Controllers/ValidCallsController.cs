@@ -60,6 +60,8 @@ namespace CRMTransactions.Controllers
 
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
+            validCall.EventTime = TimeZoneInfo.ConvertTimeFromUtc(validCall.EventTime.ToUniversalTime(), cstZone);
+
             validCall.UpdatedDateTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
             if (id != validCall.ValidCallId)
@@ -101,11 +103,6 @@ namespace CRMTransactions.Controllers
             validCall.EventTime = TimeZoneInfo.ConvertTimeFromUtc(validCall.EventTime.ToUniversalTime(), cstZone);
 
             validCall.UpdatedDateTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
-
-            if (validCall.FollowUpTime != null)
-            {
-                validCall.FollowUpTime = TimeZoneInfo.ConvertTimeFromUtc(validCall.FollowUpTime.GetValueOrDefault(), cstZone);
-            }
 
             context.ValidCalls.Add(validCall);
 
