@@ -62,6 +62,11 @@ namespace CRMTransactions.Controllers
 
             validCall.EventTime = TimeZoneInfo.ConvertTimeFromUtc(validCall.EventTime.ToUniversalTime(), cstZone);
 
+            if (validCall.FollowUpTime != null)
+            {
+                validCall.FollowUpTime = TimeZoneInfo.ConvertTimeFromUtc(validCall.FollowUpTime.GetValueOrDefault().ToUniversalTime(), cstZone);
+            }
+
             validCall.UpdatedDateTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
             if (id != validCall.ValidCallId)
@@ -103,6 +108,12 @@ namespace CRMTransactions.Controllers
             validCall.EventTime = TimeZoneInfo.ConvertTimeFromUtc(validCall.EventTime.ToUniversalTime(), cstZone);
 
             validCall.UpdatedDateTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
+
+            if (validCall.FollowUpTime != null)
+            {
+                validCall.FollowUpTime = TimeZoneInfo.ConvertTimeFromUtc(validCall.FollowUpTime.GetValueOrDefault().ToUniversalTime(), cstZone);
+            }
+
 
             context.ValidCalls.Add(validCall);
 
