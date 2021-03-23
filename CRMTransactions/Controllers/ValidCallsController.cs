@@ -56,7 +56,11 @@ namespace CRMTransactions.Controllers
         {
             int id = validCall.ValidCallId;
 
-            validCall.UpdatedDateTime = DateTime.Now;
+            DateTime timeUtc = System.DateTime.UtcNow;
+
+            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+            validCall.UpdatedDateTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
             if (id != validCall.ValidCallId)
             {
@@ -94,7 +98,7 @@ namespace CRMTransactions.Controllers
 
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
-            validCall.EventTime = TimeZoneInfo.ConvertTimeFromUtc(validCall.EventTime, cstZone);
+            validCall.EventTime = TimeZoneInfo.ConvertTimeFromUtc(validCall.EventTime.ToUniversalTime(), cstZone);
 
             validCall.UpdatedDateTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
