@@ -29,9 +29,18 @@ namespace CRMTransactions.Controllers
         // GET: api/ValidCalls
         [HttpGet]
         [Route("GetValidCalls")]
-        public async Task<ActionResult<IEnumerable<ValidCall>>> GetValidCalls()
+        public async Task<ActionResult<IEnumerable<ValidCall>>> GetValidCalls(DateTime? dateTime = null)
         {
-            return await context.ValidCalls.Include("MissedCalls").OrderByDescending(x => x.ValidCallId).ToListAsync();
+            if (dateTime == null)
+                dateTime = DateTime.Now.AddDays(Convert.ToDouble(configuration.GetValue<string>("DaysFilter")));
+
+            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+            dateTime = TimeZoneInfo.ConvertTimeFromUtc(dateTime.GetValueOrDefault().ToUniversalTime(), cstZone);
+
+            var validCalls = await context.ValidCalls.Include("MissedCalls").OrderByDescending(x => x.ValidCallId).ToListAsync();
+
+            return validCalls.Where(m => m.EventTime >= dateTime).ToList();
         }
 
         // GET: api/ValidCalls/5

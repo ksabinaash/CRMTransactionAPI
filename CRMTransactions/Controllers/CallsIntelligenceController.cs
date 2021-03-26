@@ -46,6 +46,12 @@ namespace CRMTransactions.Controllers
                 toDate = DateTime.Now;
             }
 
+            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+            fromDate = TimeZoneInfo.ConvertTimeFromUtc(fromDate.GetValueOrDefault().ToUniversalTime(), cstZone);
+
+            toDate = TimeZoneInfo.ConvertTimeFromUtc(toDate.GetValueOrDefault().ToUniversalTime(), cstZone);
+
             var labs = GetLabs().Result.Value;
 
             var callTypes = new List<string>() { "MISSED", "INCOMING", "OUTGOING" };
@@ -144,6 +150,12 @@ namespace CRMTransactions.Controllers
                 toDate = DateTime.Now;
             }
 
+            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+            fromDate = TimeZoneInfo.ConvertTimeFromUtc(fromDate.GetValueOrDefault().ToUniversalTime(), cstZone);
+
+            toDate = TimeZoneInfo.ConvertTimeFromUtc(toDate.GetValueOrDefault().ToUniversalTime(), cstZone);
+
             var labs = GetLabs().Result.Value;
 
             var callPurpose = await context.CallPurpose.ToListAsync();
@@ -228,9 +240,14 @@ namespace CRMTransactions.Controllers
                 toDate = DateTime.Now;
             }
 
+            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+            fromDate = TimeZoneInfo.ConvertTimeFromUtc(fromDate.GetValueOrDefault().ToUniversalTime(), cstZone);
+
+            toDate = TimeZoneInfo.ConvertTimeFromUtc(toDate.GetValueOrDefault().ToUniversalTime(), cstZone);
+
             labName = labName.Equals("All", StringComparison.InvariantCultureIgnoreCase) ? null: labName.ToUpper();
            
-
             CallTrendChart response = new CallTrendChart();
 
             var labs = GetLabs().Result.Value;

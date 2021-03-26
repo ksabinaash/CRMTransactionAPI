@@ -45,6 +45,10 @@ namespace CRMTransactions.Controllers
             if (dateTime == null)
                 dateTime = DateTime.Now.AddDays(Convert.ToDouble(config.GetValue<string>("DaysFilter")));
 
+            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+            dateTime = TimeZoneInfo.ConvertTimeFromUtc(dateTime.GetValueOrDefault().ToUniversalTime(), cstZone);
+
             List<MissedCallGrid> result = new List<MissedCallGrid>();
 
             foreach (var call in missedCalls.Where(m => m.EventTime >= dateTime))
