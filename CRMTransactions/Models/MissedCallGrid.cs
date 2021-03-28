@@ -37,6 +37,8 @@ namespace CRMTransactions.Models
 
         public string Action { get; set; }
 
+        public DateTime? FollowUpTime { get; set; }
+
         public string Comment { get; set; }
 
         public bool IsWhiteListedCall { get; set; }

@@ -89,6 +89,7 @@ namespace CRMTransactions.Controllers
                         RespondedTime = call.RespondedTime,
                         Action = call.ValidCall.Action,
                         CallPurpose = call.ValidCall.CallPurpose,
+                        FollowUpTime = call.ValidCall.FollowUpTime,
                         Comment = call.ValidCall.Comment,
                         IsWhiteListedCall = call.IsWhiteListed,
                         CustomerName = call.CustomerName,
