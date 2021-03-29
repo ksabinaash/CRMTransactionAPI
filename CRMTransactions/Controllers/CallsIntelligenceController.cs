@@ -366,7 +366,7 @@ namespace CRMTransactions.Controllers
             var diff = Enumerable.Range(0, Int32.MaxValue)
                                  .Select(e => start.AddMonths(e))
                                  .TakeWhile(e => e <= end)
-                                 .Select(e => e.ToString("MMMM yyyy"));
+                                 .Select(e => e.ToString("MMM yyyy"));
 
             var value = diff.ToList();
 
