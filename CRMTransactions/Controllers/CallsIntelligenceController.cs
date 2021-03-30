@@ -43,9 +43,12 @@ namespace CRMTransactions.Controllers
 
             if (toDate == null)
             {
-                toDate = DateTime.Now;
+                toDate = DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
             }
-
+            else
+            {
+                toDate = toDate?.AddHours(23).AddMinutes(59).AddSeconds(59);
+            }
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
             fromDate = TimeZoneInfo.ConvertTimeFromUtc(fromDate.GetValueOrDefault().ToUniversalTime(), cstZone);
@@ -147,7 +150,11 @@ namespace CRMTransactions.Controllers
 
             if (toDate == null)
             {
-                toDate = DateTime.Now;
+                toDate = DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+            }
+            else
+            {
+                toDate = toDate?.AddHours(23).AddMinutes(59).AddSeconds(59);
             }
 
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
@@ -237,7 +244,11 @@ namespace CRMTransactions.Controllers
 
             if (toDate == null)
             {
-                toDate = DateTime.Now;
+                toDate = DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+            }
+            else
+            {
+                toDate= toDate?.AddHours(23).AddMinutes(59).AddSeconds(59);
             }
 
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
@@ -313,7 +324,7 @@ namespace CRMTransactions.Controllers
 
                 var purpose = callTrendDictionary[item.Metric.CallType] as List<ChartMetrics>;
 
-                purpose.Where(m => m.Name == CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.Metric.Month) + " " + item.Metric.Year).ToList().ForEach(s => s.count = item.Count);
+                purpose.Where(m => m.Name == CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthGenitiveNames[item.Metric.Month-1] + " " + item.Metric.Year).ToList().ForEach(s => s.count = item.Count);
             }
 
             foreach (var item in groupedMissedCalls)
@@ -323,7 +334,7 @@ namespace CRMTransactions.Controllers
 
                 var purpose = callTrendDictionary[item.Metric.CallType] as List<ChartMetrics>;
 
-                purpose.Where(m => m.Name == CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item.Metric.Month) + " " + item.Metric.Year).ToList().ForEach(s => s.count = item.Count);
+                purpose.Where(m => m.Name == CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedMonthGenitiveNames[item.Metric.Month - 1] + " " + item.Metric.Year).ToList().ForEach(s => s.count = item.Count);
             }
 
             response.trendData = callTrendDictionary;
