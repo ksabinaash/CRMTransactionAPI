@@ -27,7 +27,7 @@ namespace CRMTransactions.Models
 
         public string RespondedCustomerMobileNumber { get; set; }
 
-        public DateTime RespondedEventTime { get; set; }
+        public DateTime? RespondedEventTime { get; set; }
 
         public int RespondedCallDuration { get; set; }
 

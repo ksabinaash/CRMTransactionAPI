@@ -64,6 +64,7 @@ namespace CRMTransactions.Controllers
                         LabPhoneNumber = call.LabPhoneNumber,
                         IsWhiteListedCall = call.IsWhiteListed,
                         CustomerName = call.CustomerName,
+                        RespondedEventTime=null,
                         CallBackStatus = config.GetValue<string>("NotCalledBackMsg")
                     };
                     result.Add(item);
