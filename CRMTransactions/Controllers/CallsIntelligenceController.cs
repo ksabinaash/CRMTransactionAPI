@@ -43,17 +43,16 @@ namespace CRMTransactions.Controllers
 
             if (toDate == null)
             {
-                toDate = DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+                toDate = DateTime.Now;
             }
-            else
-            {
-                toDate = toDate?.AddHours(23).AddMinutes(59).AddSeconds(59);
-            }
+
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
             fromDate = TimeZoneInfo.ConvertTimeFromUtc(fromDate.GetValueOrDefault().ToUniversalTime(), cstZone);
 
             toDate = TimeZoneInfo.ConvertTimeFromUtc(toDate.GetValueOrDefault().ToUniversalTime(), cstZone);
+
+            toDate = toDate?.AddHours(23).AddMinutes(59).AddSeconds(59);
 
             var labs = GetLabs().Result.Value;
 
@@ -148,20 +147,20 @@ namespace CRMTransactions.Controllers
                 fromDate = DateTime.Now.AddDays(Convert.ToDouble(config.GetValue<string>("DefaultReportFromDate")));
             }
 
+
             if (toDate == null)
             {
-                toDate = DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+                toDate = DateTime.Now;
             }
-            else
-            {
-                toDate = toDate?.AddHours(23).AddMinutes(59).AddSeconds(59);
-            }
+
 
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
             fromDate = TimeZoneInfo.ConvertTimeFromUtc(fromDate.GetValueOrDefault().ToUniversalTime(), cstZone);
 
             toDate = TimeZoneInfo.ConvertTimeFromUtc(toDate.GetValueOrDefault().ToUniversalTime(), cstZone);
+
+            toDate = toDate?.AddHours(23).AddMinutes(59).AddSeconds(59);
 
             var labs = GetLabs().Result.Value;
 
@@ -244,18 +243,17 @@ namespace CRMTransactions.Controllers
 
             if (toDate == null)
             {
-                toDate = DateTime.Now.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
+                toDate = DateTime.Now; 
             }
-            else
-            {
-                toDate= toDate?.AddHours(23).AddMinutes(59).AddSeconds(59);
-            }
+            
 
             TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
             fromDate = TimeZoneInfo.ConvertTimeFromUtc(fromDate.GetValueOrDefault().ToUniversalTime(), cstZone);
 
             toDate = TimeZoneInfo.ConvertTimeFromUtc(toDate.GetValueOrDefault().ToUniversalTime(), cstZone);
+
+            toDate = toDate?.AddHours(23).AddMinutes(59).AddSeconds(59);
 
             labName = labName.Equals("All", StringComparison.InvariantCultureIgnoreCase) ? null: labName.ToUpper();
            
